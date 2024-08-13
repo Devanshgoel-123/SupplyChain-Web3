@@ -2,9 +2,6 @@
 pragma solidity ^0.8.0;
 
 contract Tracking {
-
-    
-
     event ShipmentCreated(
         address indexed sender,
         address indexed to,
@@ -52,7 +49,7 @@ contract Tracking {
     }
     mapping(address => Shipment[]) public shipmentsArr;
     uint256 public shipmentCount;
-    
+
     struct TypeShipment {
         // This will be used to store data on the blokkchain
         address sender;
@@ -65,9 +62,11 @@ contract Tracking {
         bool isPaid;
     }
     TypeShipment[] typeShipments;
+
     constructor() {
         shipmentCount = 0;
     }
+
     function createShipment(
         // This function is there to notify that the product is ready for shipment
         address receiver,
@@ -91,7 +90,18 @@ contract Tracking {
         );
         shipmentsArr[msg.sender].push(shipment);
         shipmentCount++;
-        typeShipments.push(msg.sender, receiver, pickupTime,0, distance, price,ShipmentStatus.Pending,false);
+        typeShipments.push(
+            TypeShipment(
+                msg.sender,
+                receiver,
+                pickupTime,
+                0,
+                distance,
+                price,
+                ShipmentStatus.Pending,
+                false
+            )
+        );
         emit ShipmentCreated(msg.sender, receiver, pickupTime, distance, price);
     }
 
@@ -101,14 +111,14 @@ contract Tracking {
         address sender
     ) public {
         Shipment storage shipment = shipmentsArr[sender][index];
-        TypeShipment storage typeShipment=typeShipments[index];
+        TypeShipment storage typeShipment = typeShipments[index];
         require(shipment.receiver == receiver, "Invalid Receiver");
         require(
             shipment.status == ShipmentStatus.Pending,
             "Shipment already in Transit"
         );
         shipment.status = ShipmentStatus.In_Transit;
-        typeShipment.status=ShipmentStatus.In_Transit;
+        typeShipment.status = ShipmentStatus.In_Transit;
         emit ShipmentTransit(sender, receiver, shipment.pickupTime);
     }
 
@@ -118,7 +128,7 @@ contract Tracking {
         uint256 index
     ) public {
         Shipment storage shipment = shipmentsArr[sender][index];
-        TypeShipment storage typeShipment=typeShipments[index];
+        TypeShipment storage typeShipment = typeShipments[index];
         require(shipment.receiver == receiver, "Invalid Receiver");
         require(
             shipment.status == ShipmentStatus.In_Transit,
@@ -126,13 +136,13 @@ contract Tracking {
         );
         require(!shipment.isPaid, "Shipment already paid");
         shipment.status = ShipmentStatus.Completed;
-        typeShipment.status=ShipmentStatus.Completed;
+        typeShipment.status = ShipmentStatus.Completed;
         shipment.deliveryTime = block.timestamp;
-        typeShipment.deliveryTime=block.timestamp;
+        typeShipment.deliveryTime = block.timestamp;
         uint256 amount = shipment.price;
         payable(shipment.sender).transfer(amount);
         shipment.isPaid = true;
-        typeShipment.isPaid=true;
+        typeShipment.isPaid = true;
         emit ShipmentDelivered(sender, receiver, block.timestamp);
         emit ShipmentPaid(sender, receiver, amount);
     }
@@ -159,20 +169,20 @@ contract Tracking {
             shipment.sender,
             shipment.receiver,
             shipment.pickupTime,
-            shipment.deliveryTime
-            shipment.price
+            shipment.deliveryTime,
+            shipment.price,
             shipment.distance,
             shipment.status,
             shipment.isPaid
-        )
+        );
     }
 
-    function getShipmentsCount(address sender) public view returns(uint256){
-        return shipmentsArr[sender].length();
+    function getShipmentsCount(address sender) public view returns (uint256) {
+        return shipmentsArr[sender].length;
     }
 
-    function getAllTransactions() public view returns (TypeShipment[] memory){  // because we are returning the data isnide the function
+    function getAllTransactions() public view returns (TypeShipment[] memory) {
+        // because we are returning the data isnide the function
         return typeShipments;
     }
-
 }
