@@ -182,7 +182,7 @@ contract Tracking {
     }
 
     function getAllTransactions() public view returns (TypeShipment[] memory) {
-        // because we are returning the data isnide the function
+        // because we are returning the data inside the function
         return typeShipments;
     }
 }

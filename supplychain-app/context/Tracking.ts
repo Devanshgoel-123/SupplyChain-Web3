@@ -3,6 +3,8 @@ import { ethers, Signer, providers } from "ethers";
 import { abi } from "./Tracking.json";
 import Web3Modal from 'web3modal';
 import { error } from "console";
+import { Sedan, Shojumaru } from "next/font/google";
+import { get } from "http";
 const contractAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
 
 type signerOrProvider = Signer | providers.Provider;
@@ -33,9 +35,9 @@ const fetchContract = (signerOrProvider: signerOrProvider) => {
     return new ethers.Contract(contractAddress, abi, signerOrProvider);
 };
 
-export const TrackingContext=React.createContext("");
-export const TrackingProvider=({children}:any)=>{
 
+export const TrackingProvider=({children}:any)=>{
+   const [currentUser,setCurrentUser]=useState<String>("");
   const createShipment = async (items:Shipment) => {
     console.log(items);
     const {receiver,pickupTime,sender,price,distance}=items;
@@ -118,11 +120,82 @@ export const TrackingProvider=({children}:any)=>{
   };
  }
 
+ const getShipment=async(index:number)=>{
+  const int_Index=index;
+  try{
+    const web3Modal=new Web3Modal();
+    const connection=await web3Modal.connect();
+    const provider= new ethers.providers.Web3Provider(connection);
+    const contract=fetchContract(provider);
+    const address=provider.getSigner().getAddress();
+    const shipment=await contract.getShipment(address,int_Index);
+    const singleShipment={
+      sender:shipment[0],
+      receiver:shipment[1],
+      pickupTime:Number(shipment[2]),
+      deliveryTime:Number(shipment[3]),
+      distance:Number(shipment[4]),
+      price:ethers.utils.formatEther(shipment[5].toString()),
+      status:shipment[6],
+      isPaid:shipment[7],
+    }
+    return singleShipment;
+  }catch(err){
+    console.log(err);
+  }
+ }
 
+  type startShipment={
+    index:number,
+    receiver:string
+  }
+ const startShipment=async (getProduct:startShipment)=>{
+  const {receiver,index}=getProduct;
+  try{
+    const web3Modal=new Web3Modal();
+    const connection=await web3Modal.connect();
+    const provider= new ethers.providers.Web3Provider(connection);
+    const contract=fetchContract(provider);
+    const sender=provider.getSigner().getAddress();
+    const shipment=await contract.startShipment(receiver,index,sender);
+    shipment.wait();
+    console.log(shipment);
+  }catch(err){
+     console.log("Sorry no Shipment",error);
+  }
+ }
+ const ifWalletConnected=async()=>{
+  try{
+    const web3Modal=new Web3Modal();
+    const connection=await web3Modal.connect();
+    const provider= new ethers.providers.Web3Provider(connection);
+    const sender=await provider.getSigner().getAddress();
+    if(!sender){
+      return "No Account availble to connect"
+    }else{
+      setCurrentUser(sender);
+    }
+  }catch(err){
+    console.log(err);
+  }
+ }
+ const connectWallet=async()=>{
+  try{
+    const web3Modal=new Web3Modal();
+    const connection=await web3Modal.connect();
+    const provider= new ethers.providers.Web3Provider(connection);
+    const sender=await provider.getSigner().getAddress();
+    setCurrentUser(sender);
+  }catch(error){
+    console.log(error);
+  }
+}
+useEffect(()=>{
+  ifWalletConnected();
+},[]);
  
 
-}
-
+ }
 
 
 
