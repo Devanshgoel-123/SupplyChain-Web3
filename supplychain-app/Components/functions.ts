@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers, Signer, providers } from "ethers";
-import { abi } from "../context/Tracking.json";
+import {abi}  from "../context/Tracking.json";
 import Web3Modal from 'web3modal';
 const contractAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
 
