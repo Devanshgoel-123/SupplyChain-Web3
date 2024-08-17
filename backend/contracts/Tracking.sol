@@ -7,7 +7,8 @@ contract Tracking {
         address indexed to,
         uint256 pickupTime,
         uint256 distance,
-        uint256 price
+        uint256 price,
+        string orderInfo
     );
     event ShipmentTransit(
         address indexed sender,
@@ -29,13 +30,6 @@ contract Tracking {
         In_Transit,
         Completed
     }
-    enum qualityChecked {
-        Upto_The_Mark,
-        Product_Missing,
-        Needs_Improvement,
-        Damaged,
-        Rework_Required
-    }
     struct Shipment {
         // This will be used to store data on the blokkchain
         address sender;
@@ -46,6 +40,7 @@ contract Tracking {
         uint256 price;
         ShipmentStatus status;
         bool isPaid;
+        string orderInfo;
     }
     mapping(address => Shipment[]) public shipmentsArr;
     uint256 public shipmentCount;
@@ -60,6 +55,7 @@ contract Tracking {
         uint256 price;
         ShipmentStatus status;
         bool isPaid;
+        string orderInfo;
     }
     TypeShipment[] typeShipments;
 
@@ -72,7 +68,8 @@ contract Tracking {
         address receiver,
         uint256 pickupTime,
         uint256 price,
-        uint256 distance
+        uint256 distance,
+        string memory orderInfo
     ) public payable {
         require(
             msg.value == price,
@@ -86,7 +83,8 @@ contract Tracking {
             distance,
             price,
             ShipmentStatus.Pending,
-            false
+            false,
+            orderInfo
         );
         shipmentsArr[msg.sender].push(shipment);
         shipmentCount++;
@@ -99,10 +97,18 @@ contract Tracking {
                 distance,
                 price,
                 ShipmentStatus.Pending,
-                false
+                false,
+                orderInfo
             )
         );
-        emit ShipmentCreated(msg.sender, receiver, pickupTime, distance, price);
+        emit ShipmentCreated(
+            msg.sender,
+            receiver,
+            pickupTime,
+            distance,
+            price,
+            orderInfo
+        );
     }
 
     function startShipment(
@@ -161,7 +167,8 @@ contract Tracking {
             uint256,
             uint256,
             ShipmentStatus,
-            bool
+            bool,
+            string memory
         )
     {
         Shipment memory shipment = shipmentsArr[sender][index];
@@ -173,7 +180,8 @@ contract Tracking {
             shipment.price,
             shipment.distance,
             shipment.status,
-            shipment.isPaid
+            shipment.isPaid,
+            shipment.orderInfo
         );
     }
 

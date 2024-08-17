@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
 import { ethers, Signer, providers } from "ethers";
-import {abi}  from "../context/Tracking.json";
+import {abi}  from "./Tracking.json";
 import Web3Modal from 'web3modal';
 const contractAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
 
@@ -21,6 +20,7 @@ interface Shipment {
     price: Number;
     status: ShipmentStatus;
     isPaid: boolean;
+    orderInfo:string;
 }
 
 interface completeShipmentData{
@@ -35,7 +35,7 @@ const fetchContract = (signerOrProvider: signerOrProvider) => {
 
   const createShipment = async (items:Shipment) => {
     console.log(items);
-    const {receiver,pickupTime,sender,price,distance}=items;
+    const {receiver,pickupTime,sender,price,distance,orderInfo}=items;
     try{
       const web3Modal=new Web3Modal();
       const connection=await web3Modal.connect();
@@ -46,6 +46,8 @@ const fetchContract = (signerOrProvider: signerOrProvider) => {
         receiver,
         new Date(String(pickupTime)).getTime(),
         ethers.utils.parseUnits(String(price),18),
+        distance,
+        orderInfo,
         {
           value:ethers.utils.parseUnits(String(price),18)
         }
@@ -72,7 +74,8 @@ const fetchContract = (signerOrProvider: signerOrProvider) => {
         deliveryTime:Number(shipment.deliveryTime),//These values are retrieved as BigInt from the smart Contract
         distance:Number(shipment.distance),//These values are retrieved as BigInt from the smart Contract
         isPaid:shipment.isPaid,
-        status:shipment.status
+        status:shipment.status,
+        orderInfo:shipment.orderInfo
       }));
       return allShipments;
      }catch(err){

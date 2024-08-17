@@ -1,8 +1,6 @@
 "use client"
 import { FC, useEffect,useState } from "react";
-import Web3Modal from 'web3modal';
-import { ethers } from "ethers";
-import {connectWallet} from "./functions"
+import {connectWallet} from "../Functions/functions"
 type linkelement={
     title:string,
     path:string
