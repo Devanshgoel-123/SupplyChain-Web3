@@ -191,6 +191,7 @@ contract Tracking {
 
     function getAllTransactions() public view returns (TypeShipment[] memory) {
         // because we are returning the data inside the function
+        require(typeShipments.length > 0, "No shipments available.");
         return typeShipments;
     }
 }
