@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import SHA256 from "crypto-js/sha256";
 import { addOrderHash } from "../redux/features/OrderSlice";
-import { createShipment, getAllShipment } from "@/Functions/functions";
+import { createShipment,getAllShipments } from "@/Functions/functions";
+
 
 type Item = {
   name: string;
@@ -27,9 +28,7 @@ enum ShipmentStatus {
 interface OrderFormProps {
   onClose: () => void;
 }
-async function getData(){
-  return await getAllShipment();
-}
+
 const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
   const [items, setItems] = useState<Item[]>([]);
   const [currentItem, setCurrentItem] = useState<Item>({
@@ -84,9 +83,9 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
       sender: "",
       status: ShipmentStatus.Pending,
       receiver: receiver,
-      pickupTime: Date.now(), 
+      pickupTime: String(new Date().getDate()), 
       price: totalPrice, 
-      deliveryTime: 0,
+      deliveryTime: String(0),
       distance: parseFloat(distance), 
       orderInfo: hash,
       isPaid: false,

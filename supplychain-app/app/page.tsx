@@ -12,7 +12,7 @@ export default function Page(){
         <ServiceCard/>
         <TableComponent/>
         <Footer/>
-    
+       
       </ReduxProvider>
     </RootLayout>
   )

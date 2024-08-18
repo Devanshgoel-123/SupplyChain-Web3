@@ -25,10 +25,10 @@ const TableComponent: React.FC = () => {
         setClicked(false);
         console.log("I got clicked");
         const shipments=await getAllShipments();
-    console.log(shipments);
+       setAllShipments(shipments);
         
     };
-    
+
     return (
         <>
             {clicked && <OrderForm onClose={handleClose}/>}
@@ -73,16 +73,16 @@ const TableComponent: React.FC = () => {
                                         {shipment.receiver.slice(0,15)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        {String(shipment.pickupTime)}
+                                        {(String(shipment.pickupTime))}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        {String(shipment.distance)}
+                                        {String(shipment.distance)} km
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {String(shipment.price)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        {String(shipment.deliveryTime)}...
+                                        {(String(shipment.deliveryTime))}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {shipment.isPaid ? "Completed":"Not Completed"}...
