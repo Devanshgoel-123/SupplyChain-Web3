@@ -18,9 +18,9 @@ export default function StartShipmentComp({onClose}:getShippingProps){
    };
    return (
     <div className="fixed inset-0 z-10 overflow-y-auto">
-    <div className="fixed inset-0 w-full h-full bg-black opacity-40"></div> {/* Semi-transparent background */}
+    <div className="fixed inset-0 w-full h-full bg-black opacity-40"></div> 
     <div className="flex items-center justify-center min-h-screen px-4 py-8">
-      <div className="relative w-full max-w-lg p-6 mx-auto bg-white rounded-md shadow-lg"> {/* Pure white background for modal */}
+      <div className="relative w-full max-w-lg p-6 mx-auto bg-white rounded-md shadow-lg">
         <div className="flex justify-end">
           <button onClick={onClose} className="p-2 text-gray-400 rounded-md hover:bg-gray-100">
             Close

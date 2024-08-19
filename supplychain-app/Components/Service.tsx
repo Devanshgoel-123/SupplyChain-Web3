@@ -2,6 +2,7 @@
 import  GetShipment  from "./GetShipment";
 import StartShipmentComp from "./StartShipment";
 import CompleteShipmentComp from "./CompleteShipment";
+import UserProfile from "./Profile";
 import { useState } from "react";
 type ServiceItem = {
   name: string;
@@ -35,6 +36,7 @@ const ServiceCard = () => {
       {activeComponent === "Comp Shipment" && (
         <CompleteShipmentComp onClose={handleClose} />
       )}
+      {activeComponent==="User Profile" && (<UserProfile onClose={handleClose}/>)}
       <section className="py-0 pb-14">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="mt-12">

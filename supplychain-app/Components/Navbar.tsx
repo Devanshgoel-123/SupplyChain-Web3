@@ -16,12 +16,6 @@ export default function Navbar(){
         {title:"ERC-20",path:"#"}
      ];
 
-    //  useEffect(()=>{
-    //     document.onclick=(e)=>{
-    //         const target=e.target;
-    //         if(!target.closest(".menu-btn")) setState(false);
-    //     }
-    //  },[]);
     
     return (
 <nav className="bg-white pb-5 md:text-sm">

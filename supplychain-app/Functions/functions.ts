@@ -1,6 +1,6 @@
 import {ethers, Signer, providers, ContractInterface } from "ethers";
 import Web3Modal from "web3modal"
-const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 import ABI from "../../backend/artifacts/contracts/Tracking.sol/Tracking.json"
 enum ShipmentStatus {
     Pending,
@@ -54,6 +54,10 @@ export const getContract = (address:string, abi:any, signerIndex:number) => {
       return;
     }
      try{
+      const web3Modal=new Web3Modal();
+      const connection=await web3Modal.connect();
+      const provider= new ethers.providers.Web3Provider(connection);
+      const address=provider.getSigner().getAddress();
       const contract=getContract(contractAddress,ABI.abi,0);
       console.log(contract)
       const createItem = await contract.createShipment(
