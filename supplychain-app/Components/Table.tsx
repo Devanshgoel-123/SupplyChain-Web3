@@ -19,15 +19,20 @@ enum ShipmentStatus {
     Completed
 }
 const TableComponent: React.FC = () => {
+    
     const [clicked, setClicked] = useState<boolean>(false);
     const [allShipments,setAllShipments]=useState<Shipment[]>([]);
     const handleClose = async () => {
         setClicked(false);
         console.log("I got clicked");
-        const shipments=await getAllShipments();
-       setAllShipments(shipments);
-        
     };
+    useEffect(()=>{
+        const fetchShipments=async()=>{
+         const shipments=await getAllShipments();  
+       setAllShipments(shipments);
+        }
+        fetchShipments();
+    },[clicked])
 
     return (
         <>

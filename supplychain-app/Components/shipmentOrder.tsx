@@ -1,9 +1,7 @@
 "use client"
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import SHA256 from "crypto-js/sha256";
-import { addOrderHash } from "../redux/features/OrderSlice";
-import { createShipment,getAllShipments } from "@/Functions/functions";
+import { createShipment } from "@/Functions/functions";
 
 
 type Item = {
@@ -40,8 +38,6 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
   const [orderSaved, setOrderSaved] = useState(false);
   const [receiver, setReceiver] = useState<string>("");
   const [distance, setDistance] = useState<string>("");
-  const dispatch = useDispatch();
-
   const calculateTotalPrice = (): number => {
     return items.reduce((total, item) => total + item.price * item.quantity, 0);
   };
@@ -92,8 +88,6 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
     };
 
     createShipment(shipmentItem);
-    dispatch(addOrderHash(order));
-
     setOrderSaved(true);
     console.log("Order saved:", order);
     console.log("Shipment saved:", shipmentItem);

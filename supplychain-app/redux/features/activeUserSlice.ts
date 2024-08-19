@@ -1,11 +1,12 @@
 import {createSlice,PayloadAction} from "@reduxjs/toolkit";
-import { stat } from "fs";
 
 type userAddress={
-  address:string
+  address:string,
+  balance:string
 };
 const initialState={
-    address:""
+    address:"",
+    balance:""
 } as userAddress;
 
 const userSlice=createSlice({
@@ -13,8 +14,9 @@ const userSlice=createSlice({
         initialState,
         reducers:{
             // A logout function can also be added
-            setActiveUser(state:userAddress,action:PayloadAction<string>){
-                state.address=action.payload;
+            setActiveUser(state:userAddress,action:PayloadAction<userAddress>){
+                state.address=action.payload.address;
+                state.balance=action.payload.balance
             }
         }
     

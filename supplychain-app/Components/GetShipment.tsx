@@ -79,8 +79,8 @@ export default function startShipment({onClose}:startShipmentProps){
                   <p>Receiver: {singleShipmentData.receiver.slice(0, 25)}...</p>
                   <p>Pickup Time: {formatDateFromBigNumber(singleShipmentData.pickupTime)}</p>
                   <p>Delivery Time: {formatDateFromBigNumber(singleShipmentData.deliveryTime)}</p>
-                  <p>Distance: {formatBigNumber(singleShipmentData.distance)}</p>
-                  <p>Price: {singleShipmentData.price}</p>
+                  <p>Distance: {formatBigNumber(singleShipmentData.distance)/10e17}</p>
+                  <p>Price: {(singleShipmentData.price)*10e17} ETH</p>
                   <p>Status: {ShipmentStatus[singleShipmentData.status]}</p>
                   <p>
                     Paid: {singleShipmentData.isPaid ? "Complete" : "Not Complete"}

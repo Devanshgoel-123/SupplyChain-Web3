@@ -7,7 +7,7 @@ enum ShipmentStatus {
     In_Transit,
     Completed
 }
-
+import { useAppDispatch } from "@/redux/hooks";
 interface Shipment {
     sender:string;
     receiver: string;
@@ -84,8 +84,6 @@ export const getContract = (address:string, abi:any, signerIndex:number) => {
     console.log("Fetching shipments...");
     const shipments = await contract.getAllTransactions();
     console.log("Shipments fetched:", shipments);
-    
-    // Format shipments
     const allShipments = shipments.map((shipment: any) => ({
       sender: shipment.sender,
       receiver: shipment.receiver,
@@ -110,7 +108,8 @@ export const getContract = (address:string, abi:any, signerIndex:number) => {
     const contract=getContract(contractAddress,ABI.abi,0);
     const signer=getSigner();
     const address=signer.getAddress();
-      const shipmentCount=await contract.getShipmentCount(address);
+      const shipmentCount=await contract.getShipmentsCount(address);
+      console.log(shipmentCount)
       return Number(shipmentCount);
   }catch(err){
     console.log(err);
@@ -181,7 +180,8 @@ export const getContract = (address:string, abi:any, signerIndex:number) => {
     const connection=await web3Modal.connect();
     const provider= new ethers.providers.Web3Provider(connection);
     const sender=await provider.getSigner().getAddress();
-    console.log(sender)
+    const senderBalance=await provider.getSigner().getBalance();
+    return {senderBalance,sender};
   }catch(error){
     console.log(error);
   }

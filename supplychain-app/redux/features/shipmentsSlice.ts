@@ -23,20 +23,13 @@ const shipmentSlice=createSlice({
     name:"UserShipments",
     initialState,
     reducers:{
-        addShipment(state:Shipment[],action:PayloadAction<Shipment>){
-            state.push(action.payload);
-        },
-        upDateShipmentStatus(state:Shipment[],action:PayloadAction<{status:Shipment["status"],index:number}>){
-            const {index,status}=action.payload;
-            if(index>=0 && index<state.length){
-                state[index].status=status;
-            }
+        fetchShipments(state:Shipment[],action:PayloadAction<Shipment[]>){
+            state=action.payload;
         }
     }
 })
 
 export const{
-    addShipment,
-    upDateShipmentStatus
+    
 }=shipmentSlice.actions;
 export default shipmentSlice.reducer;
