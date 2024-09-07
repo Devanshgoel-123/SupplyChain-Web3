@@ -2,7 +2,8 @@ import { useState } from "react";
 import { startShipment } from "@/Functions/functions";
 interface getProuductState{
     receiver:string,
-    index:number
+    index:number,
+    sender:string
 }
 interface getShippingProps{
     onClose:()=>void
@@ -11,7 +12,8 @@ interface getShippingProps{
 export default function StartShipmentComp({onClose}:getShippingProps){
     const [getProduct,setGetProduct]=useState<getProuductState>({
         receiver:"",
-        index:0
+        index:0,
+        sender:""
     })
    const startShipping=()=>{
     startShipment(getProduct);
@@ -50,6 +52,17 @@ export default function StartShipmentComp({onClose}:getShippingProps){
                 onChange={(e) => setGetProduct({
                     ...getProduct,
                     index:Number(e.target.value)
+                })}
+              />
+            </div>
+            <div className="relative mt-3">
+              <input
+                type="text"
+                placeholder="Sender"
+                className="w-full pl-5 pr-3 py-2 text-gray-500 outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
+                onChange={(e) => setGetProduct({
+                    ...getProduct,
+                    sender:(e.target.value)
                 })}
               />
             </div>

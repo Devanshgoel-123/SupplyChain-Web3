@@ -1,7 +1,6 @@
 "use client"
 import { useState } from "react";
 import React from "react";
-import SHA256 from "crypto-js/sha256";
 import { completeShipment, getShipment } from "@/Functions/functions";
 interface completeShipmentInterface{
   receiver:string,
@@ -34,33 +33,11 @@ interface OrderFormProps {
 }
 
 const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
-  const [items, setItems] = useState<Item[]>([]);
-  const [currentItem, setCurrentItem] = useState<Item>({
-    name: "",
-    quantity: 1,
-    price: 0,
-    batchNumber: "",
-  });
-  const [orderSaved, setOrderSaved] = useState(false);
   const [receiver, setReceiver] = useState<string>("");
   const [index, setIndex] = useState<string>("");
+  const [sender,setSender]=useState<string>("");
+  const [completeshipment,setCompleteShipment]=useState<boolean>(false);
 
-  const calculateTotalPrice = (): number => {
-    return items.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCurrentItem((prevItem) => ({
-      ...prevItem,
-      [name]: name === "quantity" || name === "price" ? parseFloat(value) : value,
-    }));
-  };
-
-  const handleAddItem = () => {
-    setItems([...items, currentItem]);
-    setCurrentItem({ name: "", quantity: 1, price: 0, batchNumber: "" });
-  };
 
   const handleReceiver = (e: React.ChangeEvent<HTMLInputElement>) => {
     setReceiver(e.target.value);
@@ -68,22 +45,21 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
   const handleIndex=(e:React.ChangeEvent<HTMLInputElement>)=>{
     setIndex(e.target.value);
   }
-  const handleSaveReceivedItems = () => {
-    const orderString = JSON.stringify(items);
-    const hash = SHA256(orderString).toString();
-    const getOrderInfo=async()=>{
-      const shipment=await getShipment(Number(index));
-      const receivedHash=shipment?.orderInfo;
-      if(hash===receivedHash){
+  const handleSender=(e:React.ChangeEvent<HTMLInputElement>)=>{
+    setSender(e.target.value);
+  }
+  const handleCompleteOrder =async () => {
+
         const completeShipmentObject={
           receiver:receiver,
-          index:Number(index)
+          index:Number(index),
+          sender:sender
         }
         const completeShipping=await completeShipment(completeShipmentObject);
+        console.log(completeShipping)
+        setCompleteShipment(true);
       }
-    }
-    getOrderInfo();
-  };
+  
 
   return (
     <div className="relative">
@@ -102,57 +78,9 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
           </button>
           </div>
           
-          <div className="grid grid-cols-1 gap-4">
-            <input
-              type="text"
-              name="name"
-              placeholder="Item Name"
-              value={currentItem.name}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="number"
-              name="quantity"
-              placeholder="Enter the Quantity of the Item"
-              value={currentItem.quantity}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="number"
-              name="price"
-              placeholder="Enter the Price of the Item"
-              value={currentItem.price}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="text"
-              name="batchNumber"
-              placeholder="Batch Number"
-              value={currentItem.batchNumber}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={handleAddItem}
-              className="bg-blue-500 text-white font-semibold rounded-lg p-2 mt-4 hover:bg-blue-600"
-            >
-              Add Item
-            </button>
-          </div>
-          <h3 className="text-lg font-medium text-gray-700 mt-5">Items in Order</h3>
-          <ul className="list-disc list-inside mt-2 space-y-2">
-            {items.map((item, index) => (
-              <li key={index} className="text-gray-600">
-                <span className="font-bold">{item.name}</span> - Quantity:{" "}
-                {item.quantity}, Price: $
-                {(item.price * item.quantity).toFixed(2)}, Batch:{" "}
-                {item.batchNumber}
-              </li>
-            ))}
-          </ul>
+          <div className="grid grid-cols-1 gap-4">  
+     
+          
           <input
             type="text"
             name="Receiver"
@@ -169,25 +97,28 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
             onChange={handleIndex}
             className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-full mt-5"
           />
-          <h4 className="text-lg font-bold text-gray-700 mt-4">
-            Total Price: ${calculateTotalPrice().toFixed(2)}
-          </h4>
-          <button
-            onClick={handleSaveReceivedItems}
-            disabled={items.length === 0}
-            className={`w-full mt-6 p-2 rounded-lg text-white font-semibold ${
-              items.length === 0 ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"
-            }`}
+           <input
+            type="text"
+            name="Sender's Address"
+            placeholder="Sender's Address"
+            value={sender}
+            onChange={handleSender}
+            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-full mt-5"
+          />
+           <button
+            onClick={handleCompleteOrder}
+            className="w-full mt-6 p-2 rounded-lg text-white font-semibold bg-black "
           >
-            Save Receivables and Hash
+            Complete Shipment
           </button>
-          {orderSaved && (
+          {completeshipment&& (
             <p className="text-green-600 font-semibold mt-4 text-center">
-              Shipment has been completed Successfully
+              Shipment has been Completed Successfully!!
             </p>
           )}
-        </div>
+       </div>
       </div>
+    </div>
     </div>
   );
 };

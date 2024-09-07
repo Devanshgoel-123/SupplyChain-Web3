@@ -15,7 +15,7 @@ export default function userProfile({onClose}:getUserProfileProps){
        const getData=async()=>{
         const allData=await getShipmentsData;
         if (typeof allData === 'number') {
-            setCount(allData); // Only set if it's a valid number
+            setCount(allData); 
         }
        }
        getData();

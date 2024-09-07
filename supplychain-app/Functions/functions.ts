@@ -1,13 +1,11 @@
 import {ethers, Signer, providers, ContractInterface } from "ethers";
-import Web3Modal from "web3modal"
-const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+const contractAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
 import ABI from "../../backend/artifacts/contracts/Tracking.sol/Tracking.json"
 enum ShipmentStatus {
     Pending,
     In_Transit,
     Completed
 }
-import { useAppDispatch } from "@/redux/hooks";
 interface Shipment {
     sender:string;
     receiver: string;
@@ -22,23 +20,27 @@ interface Shipment {
 
 interface completeShipmentData{
   receiver:string,
-  index:Number
+  index:Number,
+  sender:String
 }
+import { MetaMaskInpageProvider } from "@metamask/providers";
+
+declare var window:any
 
 
-const localProvider = new ethers.providers.JsonRpcProvider(
-  "http://localhost:8545"
-);
+// const localProvider = new ethers.providers.JsonRpcProvider(
+//   "http://localhost:8545"
+// );
 
-export const getProvider = () => {
-  return localProvider;
-};
+// export const getProvider = () => {
+//   return localProvider;
+// };
 
-export const getSigner = (index = 0) => {
-  const provider = getProvider();
-  const signer = provider.getSigner(index);
-  return signer;
-};
+// export const getSigner = (index:number) => {
+//   const provider = getProvider();
+//   const signer = provider.getSigner(index);
+//   return signer;
+// };
 
 export const getContract = (address:string, abi:any, signerIndex:number) => {
   const signer = getSigner(signerIndex);
@@ -46,41 +48,46 @@ export const getContract = (address:string, abi:any, signerIndex:number) => {
   return contract;
 };
 
+export const fetchProvider=()=>{
+  const provider=new ethers.providers.Web3Provider(window.ethereum);
+  return provider;
+};
 
-  const createShipment = async (items:Shipment) => {
-    let {receiver,pickupTime,price,distance,orderInfo}=items;
-    if (isNaN(price) || isNaN(distance)) {
-      console.error("Invalid price, distance, or pickupTime:", { price, distance, pickupTime });
-      return;
-    }
-     try{
-      const web3Modal=new Web3Modal();
-      const connection=await web3Modal.connect();
-      const provider= new ethers.providers.Web3Provider(connection);
-      const address=provider.getSigner().getAddress();
+export const getSigner=(index:number)=>{
+  const provider=fetchProvider();
+  const signer=provider.getSigner(index);
+  return signer;
+}
+    const createShipment = async (items: Shipment) => {
+      try {
+      await window.ethereum.request({method:"eth_requestAccounts"});
+      const signer=getSigner(0);
       const contract=getContract(contractAddress,ABI.abi,0);
-      console.log(contract)
-      const createItem = await contract.createShipment(
-        receiver,
-        pickupTime,
-        ethers.utils.parseUnits(String(price),18),
-        distance,
-        orderInfo,
-        {
-          value:ethers.utils.parseUnits(String(price),18)
-        }
-      );
-      const tx=await createItem.wait(); // this line waits for the transaction to be confirmed
-      console.log(tx);
-      console.log(createItem);
-    }catch(err){
-      console.log(err);
-    }
- };
+    
+        let { sender, pickupTime, price, distance, orderInfo } = items;
+        const nonce = await signer.getTransactionCount('latest');
+        const createItem = await contract.createShipment(
+          sender,
+          pickupTime,
+          ethers.utils.parseUnits(String(price), 18),
+          distance,
+          orderInfo,
+          {
+            value: ethers.utils.parseUnits(String(price), 18),
+            nonce:nonce,
+          }
+        );
+    
+        const tx = await createItem.wait();
+        console.log(tx);
+      } catch (err) {
+        console.error("Error creating shipment:", err);
+      }
+    };
+    
  const getAllShipments = async () => {
   try {
     const contract=getContract(contractAddress,ABI.abi,0);
-    console.log(contract)
     console.log("Fetching shipments...");
     const shipments = await contract.getAllTransactions();
     console.log("Shipments fetched:", shipments);
@@ -106,7 +113,7 @@ export const getContract = (address:string, abi:any, signerIndex:number) => {
  const getShipmentsCount=async ()=>{
   try{
     const contract=getContract(contractAddress,ABI.abi,0);
-    const signer=getSigner();
+    const signer=getSigner(0);
     const address=signer.getAddress();
       const shipmentCount=await contract.getShipmentsCount(address);
       console.log(shipmentCount)
@@ -117,13 +124,12 @@ export const getContract = (address:string, abi:any, signerIndex:number) => {
  }
  
  const completeShipment=async (completeShipment:completeShipmentData)=>{
-  const {receiver,index}=completeShipment;
+  const {receiver,index,sender}=completeShipment;
   try{ 
     const contract=getContract(contractAddress,ABI.abi,0);
-    const signer=getSigner();
-    const address=signer.getAddress();
-    const transaction=await contract.completeShipment(receiver,address,index,{
-      gasLimit:30000
+    const signer=getSigner(0);
+    const transaction=await contract.completeShipment(receiver,sender,index,{
+      gasLimit:300000
     });
     transaction.wait();
     console.log(transaction);
@@ -136,7 +142,7 @@ export const getContract = (address:string, abi:any, signerIndex:number) => {
   const int_Index=index;
   try{
     const contract=getContract(contractAddress,ABI.abi,0);
-    const signer=getSigner();
+    const signer=getSigner(0);
     const address=signer.getAddress();
     const shipment=await contract.getShipment(address,int_Index);
     const singleShipment={
@@ -158,36 +164,37 @@ export const getContract = (address:string, abi:any, signerIndex:number) => {
 
   type startShipment={
     index:number,
-    receiver:string
+    receiver:string,
+    sender:string
   }
  const startShipment=async (getProduct:startShipment)=>{
-  const {receiver,index}=getProduct;
+  const {receiver,index,sender}=getProduct;
+  console.log(receiver)
   try{
     const contract=getContract(contractAddress,ABI.abi,0);
-    const signer=getSigner();
-    const address=signer.getAddress();
-    const shipment=await contract.startShipment(receiver,index,address);
+    const signer=await getSigner(0);
+    const address=await signer.getAddress();
+    console.log(address);
+    const shipment=await contract.startShipment(receiver,index,sender);
     shipment.wait();
     console.log(shipment);
   }catch(err){
      console.log("Sorry no Shipment",err);
   }
  }
-
- const connectWallet=async()=>{
-  try{
-    const web3Modal=new Web3Modal();
-    const connection=await web3Modal.connect();
-    const provider= new ethers.providers.Web3Provider(connection);
-    const sender=await provider.getSigner().getAddress();
-    const senderBalance=await provider.getSigner().getBalance();
-    return {senderBalance,sender};
-  }catch(error){
-    console.log(error);
+ const connectWallet = async () => {
+  try {
+     const provider=fetchProvider();
+     await provider.send('eth_requestAccounts',[]);
+     const signer=getSigner(0);
+    const sender = await signer.getAddress();
+    const senderBalance = await signer.getBalance();
+    console.log(senderBalance);
+    return { provider, signer, sender, senderBalance };
+  } catch (error) {
+    console.error("Wallet connection failed:", error);
   }
-
- }
-
+};
 
 
 

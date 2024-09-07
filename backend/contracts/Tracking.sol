@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 contract Tracking {
     event ShipmentCreated(
@@ -64,8 +64,7 @@ contract Tracking {
     }
 
     function createShipment(
-        // This function is there to notify that the product is ready for shipment
-        address receiver,
+        address sender,
         uint256 pickupTime,
         uint256 price,
         uint256 distance,
@@ -76,8 +75,8 @@ contract Tracking {
             "Payment Amount must Match the Delivery amount"
         );
         Shipment memory shipment = Shipment(
+            sender,
             msg.sender,
-            receiver,
             pickupTime,
             0,
             distance,
@@ -86,12 +85,12 @@ contract Tracking {
             false,
             orderInfo
         );
-        shipmentsArr[msg.sender].push(shipment);
+        shipmentsArr[sender].push(shipment);
         shipmentCount++;
         typeShipments.push(
             TypeShipment(
+                sender,
                 msg.sender,
-                receiver,
                 pickupTime,
                 0,
                 distance,
@@ -103,7 +102,7 @@ contract Tracking {
         );
         emit ShipmentCreated(
             msg.sender,
-            receiver,
+            sender,
             pickupTime,
             distance,
             price,
@@ -116,8 +115,8 @@ contract Tracking {
         uint256 index,
         address sender
     ) public {
-        Shipment storage shipment = shipmentsArr[sender][index];
-        TypeShipment storage typeShipment = typeShipments[index];
+        Shipment storage shipment = shipmentsArr[sender][index - 1];
+        TypeShipment storage typeShipment = typeShipments[index - 1];
         require(shipment.receiver == receiver, "Invalid Receiver");
         require(
             shipment.status == ShipmentStatus.Pending,
@@ -190,7 +189,6 @@ contract Tracking {
     }
 
     function getAllTransactions() public view returns (TypeShipment[] memory) {
-        // because we are returning the data inside the function
         require(typeShipments.length > 0, "No shipments available.");
         return typeShipments;
     }

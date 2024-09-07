@@ -36,7 +36,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
     batchNumber: "",
   });
   const [orderSaved, setOrderSaved] = useState(false);
-  const [receiver, setReceiver] = useState<string>("");
+  const [sender, setSender] = useState<string>("");
   const [distance, setDistance] = useState<string>("");
   const calculateTotalPrice = (): number => {
     return items.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -55,8 +55,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
     setCurrentItem({ name: "", quantity: 1, price: 0, batchNumber: "" });
   };
 
-  const handleReceiver = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setReceiver(e.target.value);
+  const handleSender= (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSender(e.target.value);
   };
   
   const handleDistance = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,9 +76,9 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
     };
 
     const shipmentItem = {
-      sender: "",
+      sender: sender,
       status: ShipmentStatus.Pending,
-      receiver: receiver,
+      receiver: "",
       pickupTime: String(new Date().getDate()), 
       price: totalPrice, 
       deliveryTime: String(0),
@@ -164,9 +164,9 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
           <input
             type="text"
             name="Receiver"
-            placeholder="Receiver's Address"
-            value={receiver}
-            onChange={handleReceiver}
+            placeholder="Sender's Address"
+            value={sender}
+            onChange={handleSender}
             className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-full mt-5"
           />
           <input
