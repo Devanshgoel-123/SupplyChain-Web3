@@ -1,5 +1,5 @@
 import {ethers, Signer, providers, ContractInterface } from "ethers";
-const contractAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+const contractAddress = "0x610178dA211FEF7D417bC0e6FeD39F05609AD788";
 import ABI from "../../backend/artifacts/contracts/Tracking.sol/Tracking.json"
 enum ShipmentStatus {
     Pending,
@@ -23,8 +23,6 @@ interface completeShipmentData{
   index:Number,
   sender:String
 }
-import { MetaMaskInpageProvider } from "@metamask/providers";
-
 declare var window:any
 
 
@@ -91,12 +89,12 @@ export const getSigner=(index:number)=>{
     console.log("Fetching shipments...");
     const shipments = await contract.getAllTransactions();
     console.log("Shipments fetched:", shipments);
-    const allShipments = shipments.map((shipment: any) => ({
+    const allShipments = shipments.map((shipment: Shipment) => ({
       sender: shipment.sender,
       receiver: shipment.receiver,
       price: ethers.utils.formatEther(shipment.price.toString()),
-      pickUpTime: (shipment.pickupTime),
-      deliveryTime: (shipment.deliveryTime),
+      pickUpTime: shipment.pickupTime.toString(),
+      deliveryTime: (shipment.deliveryTime).toString(),
       distance: (shipment.distance),
       isPaid: shipment.isPaid,
       status: shipment.status,
@@ -127,7 +125,7 @@ export const getSigner=(index:number)=>{
   const {receiver,index,sender}=completeShipment;
   try{ 
     const contract=getContract(contractAddress,ABI.abi,0);
-    const signer=getSigner(0);
+    // const signer=getSigner(0);
     const transaction=await contract.completeShipment(receiver,sender,index,{
       gasLimit:300000
     });
@@ -138,13 +136,12 @@ export const getSigner=(index:number)=>{
   };
  }
 
- const getShipment=async(index:number)=>{
+ const getShipment=async(index:number,sender:string)=>{
   const int_Index=index;
   try{
     const contract=getContract(contractAddress,ABI.abi,0);
     const signer=getSigner(0);
-    const address=signer.getAddress();
-    const shipment=await contract.getShipment(address,int_Index);
+    const shipment=await contract.getShipment(sender,int_Index);
     const singleShipment={
       sender:shipment[0],
       receiver:shipment[1],

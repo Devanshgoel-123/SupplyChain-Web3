@@ -65,7 +65,7 @@ contract Tracking {
 
     function createShipment(
         address sender,
-        uint256 pickupTime,
+        // uint256 pickupTime,
         uint256 price,
         uint256 distance,
         string memory orderInfo
@@ -74,10 +74,11 @@ contract Tracking {
             msg.value == price,
             "Payment Amount must Match the Delivery amount"
         );
+        uint256 pickuptime = block.timestamp;
         Shipment memory shipment = Shipment(
             sender,
             msg.sender,
-            pickupTime,
+            pickuptime,
             0,
             distance,
             price,
@@ -91,7 +92,7 @@ contract Tracking {
             TypeShipment(
                 sender,
                 msg.sender,
-                pickupTime,
+                pickuptime,
                 0,
                 distance,
                 price,
@@ -103,7 +104,7 @@ contract Tracking {
         emit ShipmentCreated(
             msg.sender,
             sender,
-            pickupTime,
+            pickuptime,
             distance,
             price,
             orderInfo

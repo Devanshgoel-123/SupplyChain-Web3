@@ -24,9 +24,10 @@ interface startShipmentProps{
 }
 export default function startShipment({onClose}:startShipmentProps){
     const [index,setIndex]=useState<string>("0");
+    const [sender,setSender]=useState<string>("");
     const [singleShipmentData,setSingleShipmentData]=useState<Shipment>();
     const getShipmentData=async()=>{
-        const data=await getShipment(Number(index));
+        const data=await getShipment(Number(index),sender);
         setSingleShipmentData(data);
         console.log(data);
     }
@@ -62,6 +63,12 @@ export default function startShipment({onClose}:startShipmentProps){
                     placeholder="index"
                     className="w-full pl-5 pr-3 py-2 text-gray-500 outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
                     onChange={(e) => setIndex(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Sender's Address"
+                    className="w-full pl-5 pr-3 py-2 text-gray-500 outline-none border focus:border-indigo-600 shadow-sm rounded-lg mt-4"
+                    onChange={(e) => setSender(e.target.value)}
                   />
                 </div>
                 <button

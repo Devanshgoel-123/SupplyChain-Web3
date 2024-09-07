@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import OrderForm from "./shipmentOrder";
 import { getAllShipments } from "@/Functions/functions";
+
 interface Shipment {
     sender:string;
     receiver: string;
@@ -30,6 +31,7 @@ const TableComponent: React.FC = () => {
         const fetchShipments=async()=>{
          const shipments=await getAllShipments();  
        setAllShipments(shipments);
+       
         }
         fetchShipments();
     },[clicked])
@@ -44,7 +46,7 @@ const TableComponent: React.FC = () => {
                             Create Trackings
                         </h3>
                         <p className="text-gray-600 mt-2">
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                            This Section here keeps track of all the shipments created my multiple users.
                         </p>
                     </div>
                     <div className="mt-3 md:mt-0" onClick={() => setClicked(!clicked)}>
@@ -70,6 +72,8 @@ const TableComponent: React.FC = () => {
                         {(allShipments)? <tbody className="text-gray-600 divide-y">
                             
                             {allShipments.map((shipment:Shipment,index:number)=>{
+                               const hexValue=String(shipment.pickupTime);
+                               console.log(hexValue);
                                 return <tr key={index}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {shipment.sender.slice(0,15)}...

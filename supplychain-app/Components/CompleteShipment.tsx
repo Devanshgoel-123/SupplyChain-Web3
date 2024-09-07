@@ -9,24 +9,7 @@ interface completeShipmentInterface{
 interface CompShippingProps{
   onClose:()=>void
 }
-type Item = {
-  name: string;
-  quantity: number;
-  price: number;
-  batchNumber: string;
-};
 
-type Order = {
-  id: string;
-  hash: string;
-  totalPrice: number;
-};
-
-enum ShipmentStatus {
-  Pending,
-  In_Transit,
-  Completed,
-}
 
 interface OrderFormProps {
   onClose: () => void;

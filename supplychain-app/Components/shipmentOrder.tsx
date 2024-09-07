@@ -68,7 +68,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
     const hash = SHA256(orderString).toString();
     const orderId = `order-${Date.now()}`;
     const totalPrice = calculateTotalPrice();
-
+    const event=Date.now();
     const order: Order = {
       id: orderId,
       hash: hash,
@@ -79,9 +79,9 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
       sender: sender,
       status: ShipmentStatus.Pending,
       receiver: "",
-      pickupTime: String(new Date().getDate()), 
-      price: totalPrice, 
-      deliveryTime: String(0),
+      pickupTime:String(event), 
+      price:totalPrice, 
+      deliveryTime: "0",
       distance: parseFloat(distance), 
       orderInfo: hash,
       isPaid: false,
