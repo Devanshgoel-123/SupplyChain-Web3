@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from "react";
 import SHA256 from "crypto-js/sha256";
-import { createShipment } from "@/Functions/functions";
+import { creationShipping } from "@/Functions/functions";
 
 
 type Item = {
@@ -82,12 +82,12 @@ const OrderForm: React.FC<OrderFormProps> = ({ onClose }) => {
       pickupTime:String(event), 
       price:totalPrice, 
       deliveryTime: "0",
-      distance: parseFloat(distance), 
+      distance: parseInt(distance), 
       orderInfo: hash,
       isPaid: false,
     };
 
-    createShipment(shipmentItem);
+    creationShipping(shipmentItem);
     setOrderSaved(true);
     console.log("Order saved:", order);
     console.log("Shipment saved:", shipmentItem);

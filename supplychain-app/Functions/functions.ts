@@ -1,6 +1,6 @@
 import {ethers, Signer, providers, ContractInterface } from "ethers";
-const contractAddress = "0x610178dA211FEF7D417bC0e6FeD39F05609AD788";
-import ABI from "../../backend/artifacts/contracts/Tracking.sol/Tracking.json"
+const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+import ABI from "./Tracking.json"
 enum ShipmentStatus {
     Pending,
     In_Transit,
@@ -56,24 +56,20 @@ export const getSigner=(index:number)=>{
   const signer=provider.getSigner(index);
   return signer;
 }
-    const createShipment = async (items: Shipment) => {
+    const creationShipping = async (items: Shipment) => {
       try {
-      await window.ethereum.request({method:"eth_requestAccounts"});
-      const signer=getSigner(0);
       const contract=getContract(contractAddress,ABI.abi,0);
-    
-        let { sender, pickupTime, price, distance, orderInfo } = items;
-        const nonce = await signer.getTransactionCount('latest');
+        let { sender, price, distance, orderInfo } = items;
+        console.log(sender,price,distance,orderInfo);
         const createItem = await contract.createShipment(
           sender,
-          pickupTime,
           ethers.utils.parseUnits(String(price), 18),
           distance,
           orderInfo,
           {
             value: ethers.utils.parseUnits(String(price), 18),
-            nonce:nonce,
-          }
+            gasLimit:ethers.utils.hexlify(3000000)
+          },
         );
     
         const tx = await createItem.wait();
@@ -140,7 +136,6 @@ export const getSigner=(index:number)=>{
   const int_Index=index;
   try{
     const contract=getContract(contractAddress,ABI.abi,0);
-    const signer=getSigner(0);
     const shipment=await contract.getShipment(sender,int_Index);
     const singleShipment={
       sender:shipment[0],
@@ -203,5 +198,5 @@ export const getSigner=(index:number)=>{
     getShipmentsCount,
     completeShipment,
     startShipment,
-    createShipment
+    creationShipping
  }
